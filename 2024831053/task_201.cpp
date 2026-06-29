@@ -36,6 +36,11 @@ int main(){
     Direction dir = RIGHT;
 
     Vector2i food(rand()%COLS, rand()%ROWS);
+    Vector2i bigFood;
+
+    bool showBigFood = false;
+
+    int normalFoodCount = 0;
 
     bool gameOver = false;
 
@@ -44,6 +49,9 @@ int main(){
 
     RectangleShape foodShape(Vector2f(CELL-1,CELL-1));
     foodShape.setFillColor(Color::Red);
+
+    RectangleShape bigFoodShape(Vector2f(CELL*2-1,CELL*2-1));
+    bigFoodShape.setFillColor(Color::Yellow);
 
     while(window.isOpen()){
         while(auto event = window.pollEvent()){
@@ -89,20 +97,47 @@ int main(){
             snake.push_front(head);
 
             if(head==food){
-                bool ok=false;
+                normalFoodCount++;
+
+                bool ok = false;
 
                 while(!ok){
-                    ok=true;
-                    food.x=rand()%COLS;
-                    food.y=rand()%ROWS;
+                    ok = true;
 
-                    for(auto &p:snake){
-                        if(p==food){
-                            ok=false;
+                    food.x = rand()%COLS;
+                    food.y = rand()%ROWS;
+
+                    for(auto &p : snake){
+                        if(p == food){
+                            ok = false;
                             break;
                         }
                     }
                 }
+
+                if(normalFoodCount == 5){
+                    showBigFood = true;
+                    normalFoodCount = 0;
+
+                    bool ok2 = false;
+
+                    while(!ok2){
+                        ok2 = true;
+
+                        bigFood.x = rand()%COLS;
+                        bigFood.y = rand()%ROWS;
+
+                        for(auto &p : snake){
+                            if(p == bigFood){
+                                ok2 = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else if(showBigFood && head==bigFood){
+                showBigFood = false;
             }
             else{
                 snake.pop_back();
@@ -117,8 +152,12 @@ int main(){
         }
 
         foodShape.setPosition(Vector2f(food.x*CELL,food.y*CELL));
-
         window.draw(foodShape);
+
+        if(showBigFood){
+            bigFoodShape.setPosition(Vector2f(bigFood.x*CELL,bigFood.y*CELL));
+            window.draw(bigFoodShape);
+        }
 
         window.display();
     }
