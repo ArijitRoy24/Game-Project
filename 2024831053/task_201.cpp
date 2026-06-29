@@ -25,7 +25,8 @@ int main(){
     srand(time(nullptr));
 
     RenderWindow window(VideoMode({WIDTH, HEIGHT}), "Task_201");
-    window.setFramerateLimit(10);
+    int speed = 10;
+    window.setFramerateLimit(speed);
 
     deque<Vector2i> snake;
 
@@ -50,7 +51,7 @@ int main(){
     RectangleShape foodShape(Vector2f(CELL-1,CELL-1));
     foodShape.setFillColor(Color::Red);
 
-    RectangleShape bigFoodShape(Vector2f(CELL*2-1,CELL*2-1));
+    RectangleShape bigFoodShape(Vector2f(CELL-1,CELL-1));
     bigFoodShape.setFillColor(Color::Yellow);
 
     while(window.isOpen()){
@@ -98,6 +99,11 @@ int main(){
 
             if(head==food){
                 normalFoodCount++;
+                if(speed < 30)   // Maximum speed
+                {
+                    speed++;
+                    window.setFramerateLimit(speed);
+                }
 
                 bool ok = false;
 
@@ -138,6 +144,15 @@ int main(){
             }
             else if(showBigFood && head==bigFood){
                 showBigFood = false;
+
+                if(speed < 30){
+                    speed += 2;
+
+                    if(speed > 30)
+                        speed = 30;
+
+                    window.setFramerateLimit(speed);
+                }
             }
             else{
                 snake.pop_back();
